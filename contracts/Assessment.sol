@@ -1,18 +1,26 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-//import "hardhat/console.sol";
-
 contract Assessment {
     address payable public owner;
     uint256 public balance;
+    string public language; // Variable to store the current language
 
     event Deposit(uint256 amount);
     event Withdraw(uint256 amount);
+    event LanguageChanged(string newLanguage); // Event to indicate language change
+    event ReceiptGenerated(
+        string userName,
+        uint256 age,
+        string accountType,
+        uint256 cardNumber,
+        uint256 monthlyTransaction
+    ); // Event for digital receipt
 
     constructor(uint initBalance) payable {
         owner = payable(msg.sender);
         balance = initBalance;
+        language = "en"; // Default language is English
     }
 
     function getBalance() public view returns(uint256){
@@ -56,5 +64,24 @@ contract Assessment {
 
         // emit the event
         emit Withdraw(_withdrawAmount);
+    }
+
+    // Function to change language
+    function changeLanguage(string memory _newLanguage) public {
+        require(bytes(_newLanguage).length > 0, "Language cannot be empty");
+        language = _newLanguage;
+        emit LanguageChanged(_newLanguage);
+    }
+
+    // Function to generate digital receipt
+    function generateReceipt(
+        string memory _userName,
+        uint256 _age,
+        string memory _accountType,
+        uint256 _cardNumber,
+        uint256 _monthlyTransaction
+    ) public {
+        require(msg.sender == owner, "You are not the owner of this account");
+        emit ReceiptGenerated(_userName, _age, _accountType, _cardNumber, _monthlyTransaction);
     }
 }
